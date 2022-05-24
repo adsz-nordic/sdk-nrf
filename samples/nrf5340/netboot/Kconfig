@@ -8,6 +8,10 @@ menu "nRF5340 Network Core Bootloader Sample Settings"
 
 config NETBOOT_MIN_PARTITION_SIZE
 	bool "Use minimimum partition size"
+
+partition=B0N_PAD
+partition-size=0x200
+source "${ZEPHYR_BASE}/../nrf/subsys/partition_manager/Kconfig.template.partition_size"
 endmenu
 
 menu "Zephyr Kernel"

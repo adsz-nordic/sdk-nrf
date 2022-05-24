@@ -1,0 +1,3 @@
+description: Nordic nRF53 netcore flash controller
+
+compatible: "nordic,flash-nrf53-netcore-controller"

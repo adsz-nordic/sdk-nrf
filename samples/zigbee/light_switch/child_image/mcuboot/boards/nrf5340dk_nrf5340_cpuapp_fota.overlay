@@ -8,4 +8,11 @@
 	chosen {
 		nordic,pm-ext-flash = &mx25r64;
 	};
+
+        soc {
+                flash_nrf53_netcore_controller: flash-nrf53-netcore-controller{
+                        compatible = "nordic,flash-nrf53-netcore-controller";
+                        label = "NORDIC_FLASH_NRF53_NETCORE_CONTROLLER";
+                };
+        };
 };

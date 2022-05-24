@@ -52,9 +52,10 @@ extern "C" {
 #endif /* CONFIG_SOC_SERIES_NRF53X */
 
 enum pcd_status {
-	PCD_STATUS_COPY = 0,
-	PCD_STATUS_COPY_DONE = 1,
-	PCD_STATUS_COPY_FAILED = 2
+	PCD_STATUS_COPY,
+	PCD_STATUS_READ,
+	PCD_STATUS_DONE,
+	PCD_STATUS_FAILED,
 };
 
 /** @brief Sets up the PCD command structure with the location and size of the
@@ -89,22 +90,23 @@ int pcd_network_core_update_initiate(const void *src_addr, size_t len);
  */
 void pcd_lock_ram(void);
 
-/** @brief Update the PCD CMD to indicate that the copy operation has completed
+/** @brief Update the PCD CMD to indicate that the operation has completed
  *         successfully.
  */
-void pcd_fw_copy_done(void);
+void pcd_fw_operation_done(void);
 
 /** @brief Invalidate the PCD CMD, indicating that the copy failed.
  */
 void pcd_fw_copy_invalidate(void);
 
-/** @brief Check the PCD CMD to find the status of the update.
+/** @brief Check the PCD CMD to find the status of the operation.
  *
  * @return PCD_STATUS_COPY if update is pending
- * @return PCD_STATUS_COPY_DONE if update has completed successfully
- * @return PCD_STATUS_COPY_FAILED if update has completed unsuccessfully
+ * @return PCD_STATUS_READ if read is pending
+ * @return PCD_STATUS_DONE if operation has completed successfully
+ * @return PCD_STATUS_FAILED if operation has completed unsuccessfully
  */
-enum pcd_status pcd_fw_copy_status_get(void);
+enum pcd_status pcd_fw_operation_status_get(void);
 
 /** @brief Get value of 'data' member of pcd cmd.
  *
@@ -122,6 +124,32 @@ const void *pcd_cmd_data_ptr_get(void);
  * @retval non-negative integer on success, negative errno code on failure.
  */
 int pcd_fw_copy(const struct device *fdev);
+
+/** @brief Read network core flash data.
+ *
+ * Use the information in the PCD CMD to read data from flash.
+ *
+ * @note This function is intended for use in b0n on network core.
+ *
+ * @param src_addr Base address from where reading is done.
+ *
+ * @retval 0 on success, other value on failure.
+ */
+int pcd_fw_read(uint32_t src_addr);
+
+/** @brief Read data from network core flash slot 0.
+ *
+ * Uses PCD command structure to communicate with the network core.
+
+ * @note This function is intended for use in mcuboot on application core.
+ *
+ * @param offset Offset from start of network core flash slot0 to read from.
+ * @param dst_addr Buffer to read the data to.
+ * @param len Amount of bytes to read.
+ *
+ * @retval 0 on success, other value on failure.
+ */
+int pcd_network_core_read(off_t offset, void *dst_addr, size_t len);
 
 #endif /* PCD_H__ */
 

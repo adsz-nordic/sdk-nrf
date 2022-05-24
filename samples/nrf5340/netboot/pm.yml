@@ -20,3 +20,19 @@ provision:
   size: 0x200
   placement:
     after: b0n
+
+b0n_primary_app:
+  span: [app]
+
+b0n_primary:
+  span: [b0n_pad, b0n_primary_app]
+  #span: [b0n_pad, app]
+
+b0n_pad:
+  size: CONFIG_PM_PARTITION_SIZE_B0N_PAD
+  placement:
+    before: [b0n_primary_app]
+    #before: [app]
+#ifdef CONFIG_FPROTECT
+    align: {start: CONFIG_FPROTECT_BLOCK_SIZE}
+#endif

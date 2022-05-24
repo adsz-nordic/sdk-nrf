@@ -35,7 +35,7 @@ void main(void)
 	uint32_t s0_addr = s0_address_read();
 	bool valid = false;
 
-	if (pcd_fw_copy_status_get() == PCD_STATUS_COPY) {
+	if (pcd_fw_operation_status_get() == PCD_STATUS_COPY) {
 		/* First we validate the data where the PCD CMD tells
 		 * us that we can find it.
 		 */
@@ -61,7 +61,7 @@ void main(void)
 		 */
 		valid = bl_validate_firmware(s0_addr, s0_addr);
 		if (valid) {
-			pcd_fw_copy_done();
+			pcd_fw_operation_done();
 		} else {
 			printk("Unable to find valid firmware inside %p\n\r",
 				(void *)s0_addr);
@@ -73,8 +73,22 @@ void main(void)
 			;
 		CODE_UNREACHABLE;
 	}
+	else if ( pcd_fw_operation_status_get() == PCD_STATUS_READ)
+	{
+		int err = pcd_fw_read(PM_B0N_PRIMARY_APP_ADDRESS);
+		if(err)
+		{
+			printk("Failed to read data: %d\n", err);
+			goto failure;
+		}
 
-	err = fprotect_area(PM_APP_ADDRESS, PM_APP_SIZE);
+		/* Success, waiting to be rebooted */
+		while (1)
+			;
+		CODE_UNREACHABLE;
+	}
+
+	err = fprotect_area(PM_B0N_PRIMARY_ADDRESS, PM_B0N_PRIMARY_SIZE);
 	if (err) {
 		printk("Failed to protect app flash: %d\n\r", err);
 		goto failure;
