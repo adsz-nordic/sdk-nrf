@@ -5,3 +5,4 @@
 #
 
 add_subdirectory_ifdef(CONFIG_FLASH_NOP_DEVICE flash_nop_device)
+add_subdirectory_ifdef(CONFIG_FLASH_NRF53_NETCORE_CONTROLLER flash_nrf53_netcore_controller)

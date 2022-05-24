@@ -12,5 +12,6 @@ menuconfig FLASH
 if FLASH
 
 rsource "flash_nop_device/Kconfig"
+rsource "flash_nrf53_netcore_controller/Kconfig"
 
 endif # FLASH

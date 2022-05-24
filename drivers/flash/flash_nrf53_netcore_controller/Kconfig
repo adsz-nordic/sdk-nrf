@@ -1,0 +1,10 @@
+# nRF53 netcore flash controller  config
+
+# Copyright (c) 2022 Nordic Semiconductor ASA
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+
+config FLASH_NRF53_NETCORE_CONTROLLER
+	bool "Flash controller for reading nRF53 netcore flash"
+	help
+	  TODO add help
