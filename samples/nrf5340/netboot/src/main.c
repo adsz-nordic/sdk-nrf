@@ -75,7 +75,7 @@ void main(void)
 	}
 	else if ( pcd_fw_operation_status_get() == PCD_STATUS_READ)
 	{
-		int err = pcd_fw_read(PM_B0N_PRIMARY_APP_ADDRESS);
+		int err = pcd_fw_read(PM_B0N_PAD_ADDRESS);
 		if(err)
 		{
 			printk("Failed to read data: %d\n", err);

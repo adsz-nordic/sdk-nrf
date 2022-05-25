@@ -231,7 +231,7 @@ if (DEFINED mcuboot_NRF53_MULTI_IMAGE_UPDATE)
     SIZE ${ram_flash_size}
     BASE ${ram_flash_addr}
     PLACEMENT start_to_end
-    DEVICE ${ram_flash_label}
+    DEVICE NORDIC_FLASH_NRF53_NETCORE_CONTROLLER
     )
 endif()
 

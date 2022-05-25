@@ -184,12 +184,86 @@ foreach (slot ${slots})
     USES_TERMINAL
     )
 
+  if (NOT DEFINED CONFIG_MCUBOOT_SIGNATURE_KEY_FILE)
+    get_shared(mcuboot_sign_key IMAGE net_core PROPERTY SIGNATURE_KEY_FILE)
+    set(CONFIG_MCUBOOT_SIGNATURE_KEY_FILE ${mcuboot_sign_key})
+  endif ()
+
+  # Set default key
+  if (NOT DEFINED mcuboot_key_file)
+    message(WARNING "
+      ---------------------------------------------------------
+      --- WARNING: Using default MCUBoot key, it should not ---
+      --- be used for production.                           ---
+      ---------------------------------------------------------
+      \n"
+    )
+    # TODO: root-rsa-2048.pem key is used only as an example to generate mcuboot header.
+    #	    It might be necessary to replace it to appropriate key. 
+    set(mcuboot_key_file ${ZEPHYR_MCUBOOT_MODULE_DIR}/"root-rsa-2048.pem")
+  endif()
+
+    execute_process(COMMAND
+      ${PYTHON_EXECUTABLE}
+      ${ZEPHYR_MCUBOOT_MODULE_DIR}/scripts/imgtool.py
+      getpub -k ${mcuboot_key_file}
+      OUTPUT_QUIET
+      ERROR_QUIET
+      RESULT_VARIABLE ret_val
+    )
+
+    if(${ret_val} EQUAL 2)
+      message(WARNING "Key file `${mcuboot_key_file}` does not contain a valid \
+                       private key. Signing of images will be disabled.")
+      message("Disable signing with `CONFIG_SIGN_IMAGES=n` to silence this warning.")
+      return()
+    endif()
+
+  set(sign_cmd_with_header
+    ${PYTHON_EXECUTABLE}
+    ${ZEPHYR_MCUBOOT_MODULE_DIR}/scripts/imgtool.py
+    sign
+    #--key ${SIGNATURE_PRIVATE_KEY_FILE}
+    --key ${mcuboot_key_file}
+    --header-size $<TARGET_PROPERTY:partition_manager,PM_B0N_PAD_SIZE>
+    --align       4
+    # TODO Version should be parametrized, e.g. with CONFIG_MCUBOOT_IMAGE_VERSION
+    --version     "1.2.3"
+    --pad-header
+  )
+
+  set(signed_hex_with_header ${PROJECT_BINARY_DIR}/net_signed_${slot}.hex)
+  add_custom_command(
+    OUTPUT
+    ${signed_hex_with_header}            # Signed hex of input hex.
+
+    COMMAND
+    # Create signed hex file from input hex file.
+    # This does not have the IMAGE_MAGIC at the end. So for this hex file
+    # to be applied by mcuboot, the application is required to write the
+    # IMAGE_MAGIC into the image trailer.
+    ${sign_cmd_with_header}
+    --slot-size $<TARGET_PROPERTY:partition_manager,PM_B0N_PRIMARY_SIZE>
+    #${to_sign}
+    ${signed_hex}
+    ${signed_hex_with_header}
+
+    DEPENDS
+    ${SIGN_KEY_FILE_DEPENDS}
+    ${signature_file}
+    ${slot}_signature_file_target
+    ${SIGNATURE_PUBLIC_KEY_FILE}
+    ${signed_hex}
+  )
+
+
   add_custom_target(
     ${slot}_signed_kernel_hex_target
     DEPENDS
     ${signed_hex}
     ${slot}_signature_file_target
     signature_public_key_file_target
+    ${signed_hex_with_header}
     )
 
   # Set hex file and target for the ${slot) (s0/s1) container partition.
@@ -197,7 +271,7 @@ foreach (slot ${slots})
   set_property(
     GLOBAL PROPERTY
     ${slot}_PM_HEX_FILE
-    ${signed_hex}
+    ${signed_hex_with_header}
     )
 
   set_property(
