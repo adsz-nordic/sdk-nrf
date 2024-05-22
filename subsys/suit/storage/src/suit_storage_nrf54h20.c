@@ -156,7 +156,7 @@ static const suit_storage_mpi_t mpi_nordic[] = {
 	{
 		.version = SUIT_MPI_INFO_VERSION,
 		.downgrade_prevention_policy = SUIT_MPI_DOWNGRADE_PREVENTION_ENABLED,
-		.independent_updateability_policy = SUIT_MPI_INDEPENDENT_UPDATE_DENIED,
+		.independent_updateability_policy = SUIT_MPI_INDEPENDENT_UPDATE_ALLOWED,
 		.signature_verification_policy =
 			SUIT_MPI_SIGNATURE_CHECK_ENABLED_ON_UPDATE_AND_BOOT,
 		.reserved = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
