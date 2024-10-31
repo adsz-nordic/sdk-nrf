@@ -120,13 +120,13 @@ static suit_plat_err_t schedule_update_and_reboot(const uint8_t *buf, size_t siz
 	return err;
 }
 
-static suit_plat_err_t update_already_ongoing(const uint8_t *buf, size_t size)
+static suit_plat_err_t sdfw_update_ongoing(const uint8_t *buf, size_t size)
 {
 	suit_plat_err_t err = SUIT_PLAT_SUCCESS;
 
 	enum sdfw_update_status update_status = sdfw_update_initial_status_get();
 
-	/* Candidate is different than current FW but SDFW update is already ongoing. */
+	/* Candidate is different than current FW but SDFW update was ongoing. */
 	switch (update_status) {
 	case SDFW_UPDATE_STATUS_NONE: {
 		/* No pending operation even though operation indicates SDFW update.
@@ -161,8 +161,8 @@ static suit_plat_err_t update_needed_action(const uint8_t *buf, size_t size)
 		break;
 	}
 	case SDFW_UPDATE_OPERATION_UROT_ACTIVATE: {
-		/* SDFW update already ongoing */
-		err = update_already_ongoing(buf, size);
+		/* SDFW update was ongoing */
+		err = sdfw_update_ongoing(buf, size);
 		break;
 	}
 	default: {

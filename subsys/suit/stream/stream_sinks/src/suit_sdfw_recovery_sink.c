@@ -115,13 +115,13 @@ static suit_plat_err_t schedule_update_and_reboot(const uint8_t *buf, size_t siz
 	return err;
 }
 
-static suit_plat_err_t update_already_ongoing(const uint8_t *buf, size_t size)
+static suit_plat_err_t recovery_update_ongoing(const uint8_t *buf, size_t size)
 {
 	suit_plat_err_t err = SUIT_PLAT_SUCCESS;
 
 	enum sdfw_update_status update_status = sdfw_update_initial_status_get();
 
-	/* Candidate is different than current FW but SDFW Recovery update is already ongoing. */
+	/* Candidate is different than current FW but SDFW Recovery update was ongoing. */
 	switch (update_status) {
 	case SDFW_UPDATE_STATUS_NONE: {
 		/* No pending operation even though operation indicates SDFW Recovery update.
@@ -145,6 +145,41 @@ static suit_plat_err_t update_already_ongoing(const uint8_t *buf, size_t size)
 	return err;
 }
 
+static suit_plat_err_t sdfw_update_ongoing(const uint8_t *buf, size_t size)
+{
+	suit_plat_err_t err = SUIT_PLAT_SUCCESS;
+
+	enum sdfw_update_status update_status = sdfw_update_initial_status_get();
+
+	/* SDFW update was ongoing. */
+	switch (update_status) {
+	case SDFW_UPDATE_STATUS_NONE: {
+		/* No pending operation even though operation indicates SDFW update.
+		 * Proceed with SDFW Recovery update.
+		 */
+		err = schedule_update_and_reboot(buf, size);
+		break;
+	}
+	case SDFW_UPDATE_STATUS_UROT_ACTIVATED: {
+		/* SDFW was installed successfully.
+		 * Proceed with SDFW Recovery update.
+		 */
+		err = schedule_update_and_reboot(buf, size);
+		break;
+	}
+	default: {
+		/* SecROM indicates error during SDFW update.
+		 * By design SDFW update error should abort installation.
+		 */
+		LOG_ERR("SDFW update failure: %08x", update_status);
+		err = SUIT_PLAT_ERR_CRASH;
+		break;
+	}
+	}
+
+	return err;
+}
+
 static suit_plat_err_t update_needed_action(const uint8_t *buf, size_t size)
 {
 	suit_plat_err_t err = SUIT_PLAT_SUCCESS;
@@ -152,16 +187,20 @@ static suit_plat_err_t update_needed_action(const uint8_t *buf, size_t size)
 	enum sdfw_update_operation initial_operation = sdfw_update_initial_operation_get();
 
 	switch (initial_operation) {
-	case SDFW_UPDATE_OPERATION_NOP:
-	case SDFW_UPDATE_OPERATION_UROT_ACTIVATE: {
+	case SDFW_UPDATE_OPERATION_NOP: {
 		/* No previously running update or after the other slot update. */
 		/* Schedule an update of this slot. */
 		err = schedule_update_and_reboot(buf, size);
 		break;
 	}
+	case SDFW_UPDATE_OPERATION_UROT_ACTIVATE: {
+		/* SDFW update was ongoing */
+		err = sdfw_update_ongoing(buf, size);
+		break;
+	}
 	case SDFW_UPDATE_OPERATION_RECOVERY_ACTIVATE: {
-		/* SDFW Recovery update already ongoing */
-		err = update_already_ongoing(buf, size);
+		/* SDFW Recovery update was ongoing */
+		err = recovery_update_ongoing(buf, size);
 		break;
 	}
 	default: {
