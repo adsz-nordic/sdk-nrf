@@ -31,7 +31,7 @@ mcuboot_secondary:
   - mcuboot_secondary_pad
   - mcuboot_secondary_app
   region: flash_primary
-  size: 0xb9000
+  size: 0xa5000
   span: *id003
 mcuboot_secondary_pad:
   region: flash_primary
@@ -40,8 +40,4 @@ mcuboot_secondary_pad:
 mcuboot_secondary_app:
   region: flash_primary
   address: 0xc0800
-  size: 0xb8800
-settings_storage:
-  address: 0x179000
-  region: flash_primary
-  size: 0x4000
+  size: 0xa4800
