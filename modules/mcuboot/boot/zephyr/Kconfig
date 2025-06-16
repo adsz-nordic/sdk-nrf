@@ -70,6 +70,14 @@ config MCUBOOT_NRF_CLEANUP_NONSECURE_RAM
 	depends on SOC_FAMILY_NORDIC_NRF && ARM_TRUSTZONE_M
 	default y if MCUBOOT_USE_ALL_AVAILABLE_RAM
 
+if MCUBOOT_NRF_CLEANUP_PERIPHERAL
+	config MCUBOOT_NRF_CLEANUP_PERIPHERAL_QSPI
+		bool "Perform QSPI peripheral cleanup before chain-loading the application"
+		depends on MCUBOOT_NRF_CLEANUP_PERIPHERAL
+		depends on NRFX_QSPI
+		default y
+endif
+
 config BOOT_SIGNATURE_KEY_FILE
 	string "MCUBoot PEM key file"
 	help
