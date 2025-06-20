@@ -131,6 +131,12 @@ config NCS_MCUBOOT_LOAD_IRONSIDE_SE_CONF_RESET_ON_ERROR
 
 endif
 
+if MCUBOOT_NRF_CLEANUP_PERIPHERAL
+	config MCUBOOT_NRF_CLEANUP_PERIPHERAL_EXTERNAL_FLASH
+		bool "Perform external flash peripheral cleanup before chain-load the application"
+		default y if PM_EXTERNAL_FLASH_ENABLED
+endif
+
 config BOOT_SIGNATURE_KEY_FILE
 	string "MCUBoot PEM key file"
 	help
