@@ -70,6 +70,12 @@ config MCUBOOT_NRF_CLEANUP_NONSECURE_RAM
 	depends on SOC_FAMILY_NORDIC_NRF && ARM_TRUSTZONE_M
 	default y if MCUBOOT_USE_ALL_AVAILABLE_RAM
 
+if MCUBOOT_NRF_CLEANUP_PERIPHERAL
+	config MCUBOOT_NRF_CLEANUP_PERIPHERAL_EXTERNAL_FLASH
+		bool "Perform external flash peripheral cleanup before chain-load the application"
+		default y if PM_EXTERNAL_FLASH_ENABLED
+endif
+
 config BOOT_SIGNATURE_KEY_FILE
 	string "MCUBoot PEM key file"
 	help
