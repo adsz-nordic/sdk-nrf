@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+source "common.sh"
+
+# cmd "west build -p -b nrf54l15dk/nrf54l15/cpuapp -- -DCONFIG_CHIP_DFU_OVER_BT_SMP=y"
+
+cmd "west build -p -b nrf54l15dk/nrf54l15/cpuapp -- -DCONFIG_CHIP_DFU_OVER_BT_SMP=y -Dmcuboot_APPLICATION_CONFIG_DIR=/home/adam/forge/ncsdk-33530/sdk-nrf/nrf/samples/zephyr/smp_svr_mini_boot/sysbuild/mcuboot -Dmcuboot_EXTRA_CONF_FILE=/home/adam/forge/ncsdk-33530/sdk-nrf/nrf/samples/matter/template/mcuboot_minimal_overrides.conf -Dmcuboot_EXTRA_DTC_OVERLAY_FILE=/home/adam/forge/ncsdk-33530/sdk-nrf/nrf/samples/matter/template/sysbuild/mcuboot/boards/nrf54l15dk_nrf54l15_cpuapp.overlay"
+
