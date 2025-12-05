@@ -10,9 +10,32 @@
 #include <common.h>
 #include "ab_utils.h"
 
+#include <zephyr/retention/blinfo.h>
+#include <bootutil/image.h>
+
 #define LOG_LEVEL LOG_LEVEL_DBG
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(ab_sample);
+
+static void blinfo_bootloader_version(void)
+{
+	struct image_version version = {0x00};
+
+	int ret = blinfo_lookup(BLINFO_BOOTLOADER_VERSION,
+				(char *)&version,
+				sizeof(struct image_version));
+
+
+	if (ret < 0) {
+		LOG_INF("blinfo_lookup error: %d", ret);
+
+	} else {
+		LOG_INF("bl iv_major: %d", version.iv_major);
+		LOG_INF("bl iv_minor: %d", version.iv_minor);
+		LOG_INF("bl iv_revision: %d", version.iv_revision);
+		LOG_INF("bl iv_build_num: %d", version.iv_build_num);
+	}
+}
 
 int main(void)
 {
@@ -29,6 +52,8 @@ int main(void)
 	 * compile which is convenient when testing firmware upgrade.
 	 */
 	LOG_INF("build time: " __DATE__ " " __TIME__);
+
+	blinfo_bootloader_version();
 
 	/* The system work queue handles all incoming mcumgr requests.  Let the
 	 * main thread idle while the mcumgr server runs.

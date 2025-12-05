@@ -7,9 +7,33 @@
 #include "../sysbuild/nrf54h20dk_nrf54h20_memory_map.dtsi"
 
 / {
+	sram@22007FC0 {
+		compatible = "zephyr,memory-region", "mmio-sram";
+		reg = <0x22007FC0 0x40>;
+		zephyr,memory-region = "RetainedMem";
+		status = "okay";
+
+		retainedmem {
+			compatible = "zephyr,retained-ram";
+			status = "okay";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			boot_info0: boot_info@0 {
+				compatible = "zephyr,retention";
+				status = "okay";
+				reg = <0x0 0x40>;
+			};
+		};
+	};
 	chosen {
 		zephyr,boot-mode = &boot_request;
+		zephyr,bootloader-info = &boot_info0;
 	};
 };
 
 secondary_app_partition: &cpuapp_slot1_partition {};
+
+&cpuapp_ram0 {
+	reg = <0x22000000 0x7FC0>;
+};
