@@ -362,8 +362,9 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endforeach()
     endif()
 
-    # The NRF54LX goes with PSA crypto by default
-    if(SB_CONFIG_SOC_SERIES_NRF54L)
+    # TODO: Ensure this is the right way to do it
+    # The NRF54LX goes with PSA crypto by default, except NRF54LS05B
+    if(SB_CONFIG_SOC_SERIES_NRF54L AND NOT SB_CONFIG_SOC_NRF54LS05B)
       if(SB_CONFIG_BOOT_SIGNATURE_TYPE_NONE)
         set_config_bool(mcuboot CONFIG_NRF_SECURITY y)
       elseif(SB_CONFIG_BOOT_SIGNATURE_TYPE_ED25519)
