@@ -126,6 +126,20 @@ config NRF_COMPRESS_CLEANUP
 
 	  This option can be disabled if it is not needed and the data contains nothing sensitive.
 
+config NRF_COMPRESS_LZMA2_LCLP_MAX
+	int "Max sum value of LC and LP parameters of LZMA2"
+	default 4
+	help
+	  Allows to fine tune the LZMA2 algorithm.
+	  TODO: Describe!
+
+config NRF_COMPRESS_MAX_LZMA_DICT_SIZE
+	int "Max size of dictionary used for LZMA."
+	default 131072
+	help
+	  Allows to fine tune the LZMA2 algorithm.
+	  TODO: Describe
+
 module = NRF_COMPRESS
 module-str = compression/decompression library
 source "subsys/logging/Kconfig.template.log_config"

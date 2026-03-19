@@ -211,6 +211,13 @@ function(zephyr_mcuboot_tasks)
 
   set(imgtool_args ${imgtool_extra})
 
+  if(CONFIG_SOC_NRF54LS05B)
+    # Overwrite default compression settings for ls05b to acommodate its limited HW resources
+    set(imgtool_args ${imgtool_args} --compression-dictsize=4096)
+    set(imgtool_args ${imgtool_args} --compression-lc=0)
+    set(imgtool_args ${imgtool_args} --compression-lp=0)
+  endif()
+
   # Extensionless prefix of any output file.
   set(output ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME}.signed)
   if(CONFIG_MCUBOOT_BOOTLOADER_MODE_RAM_LOAD OR CONFIG_MCUBOOT_BOOTLOADER_MODE_RAM_LOAD_WITH_REVERT)
