@@ -126,19 +126,19 @@ config NRF_COMPRESS_CLEANUP
 
 	  This option can be disabled if it is not needed and the data contains nothing sensitive.
 
-config NRF_COMPRESS_LZMA2_LCLP_MAX
-	int "Max sum value of LC and LP parameters of LZMA2"
+config NRF_COMPRESS_LZMA_MAX_LCLP
+	int "Max value of sum of lc and lp parameters for LZMA compression"
 	default 4
 	help
-	  Allows to fine tune the LZMA2 algorithm.
-	  TODO: Describe!
+	  Allows to fine tune the LZMA calgorithm.
+	  The sum of lc and lp cannot be greater than this value.
 
-config NRF_COMPRESS_MAX_LZMA_DICT_SIZE
-	int "Max size of dictionary used for LZMA."
+config NRF_COMPRESS_LZMA_MAX_DICT_SIZE
+	int "Max size of dictionary used for LZMA"
 	default 131072
 	help
-	  Allows to fine tune the LZMA2 algorithm.
-	  TODO: Describe
+	  Allows to fine tune the LZMA algorithm.
+	  Affects amount of RAM needed for decompression.
 
 module = NRF_COMPRESS
 module-str = compression/decompression library
