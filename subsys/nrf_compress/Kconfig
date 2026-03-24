@@ -126,16 +126,33 @@ config NRF_COMPRESS_CLEANUP
 
 	  This option can be disabled if it is not needed and the data contains nothing sensitive.
 
-config NRF_COMPRESS_LZMA_MAX_LCLP
-	int "Max value of sum of lc and lp parameters for LZMA compression"
-	default 4
+config NRF_COMPRESS_LZMA_LC
+	int "Number of literal context bits"
+	default NRF_COMPRESS_GLOBAL_LZMA_LC
 	help
 	  Allows to fine tune the LZMA calgorithm.
-	  The sum of lc and lp cannot be greater than this value.
+	  Sets the number of bits of the previous literal.
+	  When set to 0, the previous literal is ignored.
+	  Make sure NRF_COMPRESS_LZMA_LC plus NRF_COMPRESS_LZMA_LP does not exceed NRF_COMPRESS_LZMA_MAX_LCLP.
+
+config NRF_COMPRESS_LZMA_LP
+	int "Literal position"
+	default NRF_COMPRESS_GLOBAL_LZMA_LP
+	help
+	  Allows to fine tune the LZMA calgorithm.
+	  Takes into acount the position of each literal in the uncompressed data.
+	  Make sure NRF_COMPRESS_LZMA_LC plus NRF_COMPRESS_LZMA_LP does not exceed NRF_COMPRESS_LZMA_MAX_LCLP.
+
+config NRF_COMPRESS_LZMA_MAX_LCLP
+	int "Max value of sum of lc and lp parameters for LZMA compression"
+	default NRF_COMPRESS_GLOBAL_LZMA_MAX_LCLP
+	help
+	  Allows to fine tune the LZMA calgorithm.
+	  Make sure NRF_COMPRESS_LZMA_LC plus NRF_COMPRESS_LZMA_LP does not exceed NRF_COMPRESS_LZMA_MAX_LCLP.
 
 config NRF_COMPRESS_LZMA_MAX_DICT_SIZE
 	int "Max size of dictionary used for LZMA"
-	default 131072
+	default NRF_COMPRESS_GLOBAL_LZMA_MAX_DICT_SIZE
 	help
 	  Allows to fine tune the LZMA algorithm.
 	  Affects amount of RAM needed for decompression.
@@ -145,3 +162,54 @@ module-str = compression/decompression library
 source "subsys/logging/Kconfig.template.log_config"
 
 endif # NRF_COMPRESS
+
+menuconfig NRF_COMPRESS_GLOBAL
+	bool "Global settings of LZMA compression algorithm"
+	# TODO: Should this be set to "n" and enabled in compression samples?
+	default y
+	help
+	  Allows to fine tune LZMA parameters and synchronize then across different build images.
+
+if NRF_COMPRESS_GLOBAL
+
+config NRF_COMPRESS_GLOBAL_LZMA_LC
+	int "Number of literal context bits"
+	default 3
+	help
+	  Sets the number of bits of the previous literal.
+	  When set to 0, the previous literal is ignored.
+	  Make sure NRF_COMPRESS_GLOBAL_LZMA_LC plus NRF_COMPRESS_GLOBAL_LZMA_LP does not exceed NRF_COMPRESS_GLOBAL_LZMA_MAX_LCLP.
+
+config NRF_COMPRESS_GLOBAL_LZMA_LP
+	int "Number of literal position bits"
+	default 1
+	help
+	  Takes into acount the position of each literal in the uncompressed data.
+	  Make sure NRF_COMPRESS_GLOBAL_LZMA_LC plus NRF_COMPRESS_GLOBAL_LZMA_LP does not exceed NRF_COMPRESS_GLOBAL_LZMA_MAX_LCLP.
+
+config NRF_COMPRESS_GLOBAL_LZMA_MAX_LCLP
+	int "Max value of sum of lc and lp parameters for LZMA compression"
+	default 4
+	help
+	  Make sure NRF_COMPRESS_GLOBAL_LZMA_LC plus NRF_COMPRESS_GLOBAL_LZMA_LP does not exceed NRF_COMPRESS_GLOBAL_LZMA_MAX_LCLP.
+
+config NRF_COMPRESS_GLOBAL_LZMA_MAX_DICT_SIZE
+	int "Max size of dictionary used for LZMA"
+	default 131072
+	help
+	  Affects amount of RAM needed for decompression.
+
+config NRF_COMPRESS_GLOBAL_LZMA_PB
+	int "Number of position bits"
+	default 2
+	help
+	  Sets the number of low bits of the dictionary position to include.
+
+config NRF_COMPRESS_GLOBAL_LZMA_COMPRESSION_PRESET
+	int "Compression level preset"
+	default 9
+	help
+	  Determines compression level.
+	  Possible values are 0 (lowest compression) to 9 (highest compression).
+
+endif # NRF_COMPRESS_GLOBAL

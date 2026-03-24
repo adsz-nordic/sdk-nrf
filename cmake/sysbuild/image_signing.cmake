@@ -211,11 +211,11 @@ function(zephyr_mcuboot_tasks)
 
   set(imgtool_args ${imgtool_extra})
 
-  if(CONFIG_SOC_NRF54LS05B)
-    # Overwrite default compression settings for ls05b to acommodate its limited HW resources
-    set(imgtool_args ${imgtool_args} --compression-dictsize=4096)
-    set(imgtool_args ${imgtool_args} --compression-lc=0)
-    set(imgtool_args ${imgtool_args} --compression-lp=0)
+  # if(CONFIG_MCUBOOT_COMPRESSED_IMAGE_SUPPORT_ENABLED AND CONFIG_SOC_NRF54LS05B)
+  if(CONFIG_MCUBOOT_COMPRESSED_IMAGE_SUPPORT_ENABLED)
+    set(imgtool_args ${imgtool_args} --compression-dictsize=${CONFIG_NRF_COMPRESS_GLOBAL_LZMA_MAX_DICT_SIZE})
+    set(imgtool_args ${imgtool_args} --compression-lc=${CONFIG_NRF_COMPRESS_GLOBAL_LZMA_LC})
+    set(imgtool_args ${imgtool_args} --compression-lp=${CONFIG_NRF_COMPRESS_GLOBAL_LZMA_LP})
   endif()
 
   # Extensionless prefix of any output file.
