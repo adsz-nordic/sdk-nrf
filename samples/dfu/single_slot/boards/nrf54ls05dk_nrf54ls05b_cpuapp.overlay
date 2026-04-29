@@ -15,12 +15,12 @@
 	partitions {
 		boot_partition: partition@0 {
 			label = "mcuboot";
-			reg = <0x0 DT_SIZE_K(28)>;
+			reg = <0x0 DT_SIZE_K(30)>;
 		};
 
 		slot0_partition: partition@7000 {
 			label = "image-0";
-			reg = <0x7000 DT_SIZE_K(348)>;
+			reg = <0x7800 DT_SIZE_K(346)>;
 		};
 
 		slot1_partition: partition@5e000 {
