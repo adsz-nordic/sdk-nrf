@@ -75,8 +75,7 @@ static bool img_mgmt_is_running_application_image(int image)
 		return true;
 	}
 
-	if (CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER >= 0 &&
-	    image == CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER &&
+	if (image == CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER &&
 	    img_mgmt_active_image() == CONFIG_MCUBOOT_APPLICATION_IMAGE_NUMBER) {
 		return true;
 	}
@@ -87,21 +86,6 @@ static bool img_mgmt_is_running_application_image(int image)
 static bool img_mgmt_is_running_application_image(int image)
 {
 	return image == img_mgmt_active_image();
-}
-#endif
-
-#if defined(CONFIG_MCUMGR_GRP_IMG_QSPI_XIP_SPLIT_COCONFIRM)
-static int img_mgmt_qspi_split_co_confirm(void)
-{
-	if (CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER < 0) {
-		return IMG_MGMT_ERR_OK;
-	}
-
-	if (boot_write_img_confirmed_multi(CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER) != 0) {
-		return IMG_MGMT_ERR_FLASH_WRITE_FAILED;
-	}
-
-	return IMG_MGMT_ERR_OK;
 }
 #endif
 
@@ -883,6 +867,15 @@ int img_mgmt_set_next_boot_slot(int slot, bool confirm)
 #endif
 
 	return img_mgmt_set_next_boot_slot_common(slot, active_slot, confirm);
+}
+#endif
+
+#if defined(CONFIG_MCUMGR_GRP_IMG_QSPI_XIP_SPLIT_COCONFIRM)
+static int img_mgmt_qspi_split_co_confirm(void)
+{
+	int slot = img_mgmt_active_slot(CONFIG_MCUBOOT_QSPI_XIP_IMAGE_NUMBER);
+
+	return img_mgmt_set_next_boot_slot(slot, true);
 }
 #endif
 
